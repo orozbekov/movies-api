@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+
 from main import app
 
 client = TestClient(app)
@@ -29,13 +30,8 @@ def test_get_all_movies():
 def test_movie_schema():
     response = client.get("/movies")
     movie = response.json()["movies"][0]
-    assert "id" in movie
-    assert "title" in movie
-    assert "year" in movie
-    assert "director" in movie
-    assert "genres" in movie
-    assert "rating" in movie
-    assert "description" in movie
+    required_keys = {"id", "title", "year", "director", "genres", "rating", "description"}
+    assert required_keys.issubset(movie.keys())
 
 
 def test_filter_by_genre():

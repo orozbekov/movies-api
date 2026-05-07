@@ -1,8 +1,8 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional
-from models import Movie, MoviesResponse
+
 from data import MOVIES
+from models import Movie, MoviesResponse
 
 app = FastAPI(
     title="Movies API",
@@ -32,8 +32,8 @@ def health():
 
 @app.get("/movies", response_model=MoviesResponse, tags=["Movies"])
 def get_movies(
-    genre: Optional[str] = Query(None, description="Filter by genre (case-insensitive)"),
-    year: Optional[int] = Query(None, description="Filter by release year"),
+    genre: str | None = Query(None, description="Filter by genre (case-insensitive)"),
+    year: int | None = Query(None, description="Filter by release year"),
 ):
     """
     Returns a hardcoded list of movies.
@@ -56,8 +56,6 @@ def get_movie(movie_id: int):
     """
     Returns a single movie by its ID.
     """
-    from fastapi import HTTPException
-
     movie = next((m for m in MOVIES if m.id == movie_id), None)
     if not movie:
         raise HTTPException(status_code=404, detail=f"Movie with id={movie_id} not found.")
